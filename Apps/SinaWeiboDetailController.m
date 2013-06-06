@@ -108,6 +108,7 @@
     
     sinaWeiboContentView = [[SinaWeiboContentView alloc] initWithWeiboInfo:info];
     [sinaWeiboContentView.weiboContentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [sinaWeiboContentView.retweetContentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     _tableView.tableHeaderView = sinaWeiboContentView;
 }
 
@@ -151,9 +152,8 @@
 //- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 //    WeiBoCell *wbCell = (WeiBoCell*)cell;
 //    NSDictionary *dic = [weiboArray objectAtIndex:indexPath.row];
-//    [wbCell.avatarButton setImageURL:[NSURL URLWithString:[[dic objectForKey:@"user"] objectForKey:@"profile_image_url"]]];
-//    [wbCell.nameLabel setText:[[dic objectForKey:@"user"] objectForKey:@"name"]];
-//    [wbCell.contentLabel setText:[dic objectForKey:@"text"]];
+//    [wbCell.avatarButton setImageURL:[NSURL URLWithString:[[dic objectForKey:@"user"] objectForKey:@"profile_image_url"]]];` 
+//    [wbCell.nam12eLabel setText:[[dic objectForKey:@"user"] objectForKey:@"name"]];//    [wbCell.contentLabel setText:[dic objectForKey:@"text"]];
 //    [wbCell.timeLabel setText:[MyServer intervalSinceNow:[dic objectForKey:@"created_at"]]];
 //    [wbCell.contentImageButton setImageURL:[NSURL URLWithString:[dic objectForKey:@"thumbnail_pic"]]];
 //    [wbCell.contentImageButton setTitle:[dic objectForKey:@"original_pic"] forState:UIControlStateNormal];
