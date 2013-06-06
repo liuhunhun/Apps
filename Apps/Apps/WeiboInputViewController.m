@@ -73,9 +73,8 @@
     }
 }
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+- (void)textViewDidChange:(UITextView *)textView {
     wordNumberLabel.text = [NSString stringWithFormat:@"%d", 140 - textView.text.length];
-    return YES;
 }
 
 @end

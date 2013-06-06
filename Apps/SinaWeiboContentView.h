@@ -12,9 +12,11 @@
 
 @interface SinaWeiboContentView : UIView {
     EGOImageButton *weiboContentImageButton;
+    EGOImageButton *retweetContentImageButton;
 }
 
 @property (nonatomic, readonly) EGOImageButton *weiboContentImageButton;
+@property (nonatomic, readonly) EGOImageButton *retweetContentImageButton;
 
 - (id)initWithWeiboInfo:(NSDictionary*)info;
 
