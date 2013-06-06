@@ -83,7 +83,7 @@
 #pragma mark - Super Method
 
 - (void)backButtonClicked {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES]; 
 }
 
 #pragma mark - Private Method
