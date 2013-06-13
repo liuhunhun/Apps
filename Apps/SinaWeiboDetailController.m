@@ -12,9 +12,14 @@
 #import "EGOImageButton.h"
 #import "SinaWeiboContentView.h"
 #import "ImagePreviewController.h"
+#import "SinaWeibo.h"
+#import "MyActivityIndicator.h"
+#import "BWStatusBarOverlay.h"
+#import "ToolBarView.h"
 
-@interface SinaWeiboDetailController () {
+@interface SinaWeiboDetailController () <SinaWeiboRequestDelegate> {
     NSDictionary *weiboDic;
+    NSArray *commentArray;
     
     EGOImageView *coverImageView;
     EGOImageButton *avatarButton;
@@ -43,13 +48,14 @@
 {
     needToolBarView = YES;
     needTableView = YES;
+    toolBarItemImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"collection_btn.png"], [UIImage imageNamed:@"comment_btn.png"], [UIImage imageNamed:@"retweet_btn.png"], [UIImage imageNamed:@"refresh_btn.png"], nil];
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     coverImageView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"cover_image.png"]];
     coverImageView.frame = CGRectMake(0, 0, 320, 98);
     [self.view addSubview:coverImageView];
     
-    avatarButton = [[EGOImageButton alloc] initWithPlaceholderImage:[UIImage imageNamed:@"avatar_default.png"]];
+    avatarButton = [[EGOImageButton alloc] initWithPlaceholderImage:[UIImage imageNamed:@"default_avatar.png"]];
     avatarButton.frame = CGRectMake(10, 14, 70, 70);
     [self.view addSubview:avatarButton];
     
@@ -76,14 +82,25 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)createViewByData:(NSDictionary*)dic {
-    weiboDic = [NSDictionary dictionaryWithDictionary:dic];
-}
-
 #pragma mark - Super Method
 
 - (void)backButtonClicked {
     [self.navigationController popViewControllerAnimated:YES]; 
+}
+
+- (void)toolBarItemClicked:(NSInteger)tag {
+    switch (tag) {
+        case 1:
+            [[self sinaWeibo] requestWithURL:@"favorites/create.json" params:[NSMutableDictionary dictionaryWithObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"] httpMethod:@"POST" delegate:self];
+            break;
+        case 2:
+            break;
+        case 3:
+            [[self sinaWeibo] requestWithURL:@"comments/create.json" params:nil httpMethod:@"GET" delegate:self];
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - Private Method
@@ -110,6 +127,10 @@
     [sinaWeiboContentView.weiboContentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [sinaWeiboContentView.retweetContentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     _tableView.tableHeaderView = sinaWeiboContentView;
+        
+    if ([[info valueForKey:@"favorited"] boolValue]) {
+        [toolBarView changeButtonImageWithTag:1 image:[UIImage imageNamed:@"has_collection_btn.png"]];
+    }
 }
 
 #pragma -
@@ -131,7 +152,7 @@
 #pragma mark UITableViewDelegate
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -141,8 +162,8 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
     label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont systemFontOfSize:15];
-    label.text = @"       评 论";
+    label.font = [UIFont boldSystemFontOfSize:15];
+    label.text = [NSString stringWithFormat:@"     评 论 ( %d )", [commentArray count]];
     return label;
 }
 
@@ -176,5 +197,24 @@
 //    
 //    wbCell.weiboID = [dic objectForKey:@"id"];
 //}
+
+#pragma mark - SinaWeiboRequest Delegate
+
+- (void)request:(SinaWeiboRequest *)request didFailWithError:(NSError *)error
+{
+    if ([request.url hasSuffix:@"favorites/create.json"]) {
+        [BWStatusBarOverlay showErrorWithMessage:@"收藏失败" duration:2 animated:YES];
+    }
+    [_activityIndicator addDismissAnimation];
+}
+
+- (void)request:(SinaWeiboRequest *)request didFinishLoadingWithResult:(id)result
+{
+    if ([request.url hasSuffix:@"favorites/create.json"]) {
+        [BWStatusBarOverlay showSuccessWithMessage:@"收藏成功" duration:2 animated:YES];
+        [toolBarView changeButtonImageWithTag:1 image:[UIImage imageNamed:@"has_collection_btn.png"]];
+    }    [self revertTableView];
+    [_activityIndicator addDismissAnimation];
+}
 
 @end

@@ -7,8 +7,9 @@
 //
 
 #import "SQLitePersistentObject.h"
+#import "GodCacheObject.h"
 
-@interface ContentImageCache : SQLitePersistentObject
+@interface ContentImageCache : GodCacheObject
 
 @property (nonatomic, readwrite, copy) NSString *imagePath;
 @property (nonatomic, readwrite, retain) NSData *contentImageData;

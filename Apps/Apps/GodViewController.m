@@ -13,6 +13,7 @@
 #import "MyActivityIndicator.h"
 #import "MenuView.h"
 #import "ToolBarView.h"
+#import "BWStatusBarOverlay.h"
 
 @interface GodViewController () <UITableViewDelegate, UITableViewDataSource, SinaWeiboDelegate, ToolBarViewDelegate> {
     BOOL isScrollUp;
@@ -116,6 +117,12 @@
         toolBarView.delegate = self;
         [self.view addSubview:toolBarView];
     }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [BWStatusBarOverlay dismissAnimated];
+    [_activityIndicator addDismissAnimation];
 }
 
 - (void)didReceiveMemoryWarning

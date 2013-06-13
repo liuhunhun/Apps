@@ -10,4 +10,6 @@
 
 @interface GodCacheObject : SQLitePersistentObject
 
++ (void)clearCache;
+
 @end

@@ -45,7 +45,7 @@
     UIView *indicatorBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width / 2.0 - 50, self.frame.size.height / 2.0 - 100, 100, 100)];
     indicatorBackgroundView.layer.cornerRadius = 5.0;
     indicatorBackgroundView.layer.masksToBounds = YES;
-    indicatorBackgroundView.backgroundColor = [UIColor clearColor];
+    indicatorBackgroundView.backgroundColor = [UIColor blackColor];
     
     [indicatorBackgroundView addSubview:_activityIndicator];
     

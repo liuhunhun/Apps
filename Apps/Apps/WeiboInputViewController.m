@@ -66,10 +66,10 @@
 }
 
 - (IBAction)rightButtonClicked:(id)sender {
+    [self dismissModalViewControllerAnimated:YES];
     if ([delegate respondsToSelector:@selector(sendNewWeibo:)] && [inputTextView.text length]) {
         NSString *content = [inputTextView.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         [delegate sendNewWeibo:content];
-        [self dismissModalViewControllerAnimated:YES];
     }
 }
 

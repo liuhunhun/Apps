@@ -21,6 +21,8 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     
+    NSLog(@"%d", arc4random() % 100);
+    
     sinaweibo = [[SinaWeibo alloc] initWithAppKey:kSinaWeiboAppKey appSecret:kSinaWeiboAppSecret appRedirectURI:kSinaAppRedirectURI andDelegate:nil];
     
     tencentWeibo = [[TCWBEngine alloc] initWithAppKey:kTencentWeiboAppKey andSecret:kTencentWeiboAppSecret andRedirectUrl:kTencentAppRedirectURI];

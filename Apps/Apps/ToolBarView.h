@@ -22,4 +22,6 @@
 
 - (id)initWithFrame:(CGRect)frame itemImages:(NSArray*)imagesArray;
 
+- (void)changeButtonImageWithTag:(NSInteger)buttonTag image:(UIImage*)image;
+
 @end

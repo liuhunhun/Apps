@@ -76,6 +76,9 @@
         CGSize size = [[weiboInfo objectForKey:@"text"] sizeWithFont:[UIFont systemFontOfSize:17.0] constrainedToSize:CGSizeMake(290, 1000) lineBreakMode:NSLineBreakByWordWrapping];
         weiboContentLabel.frame = CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, size.height);
         
+        [weiboContentImageButton setImageURL:[NSURL URLWithString:[info objectForKey:@"thumbnail_pic"]]];
+        [weiboContentImageButton setTitle:[info objectForKey:@"original_pic"] forState:UIControlStateNormal];
+        
         if (weiboContentImageButton.imageURL) {
             if (weiboContentImageButton.imageView.image) {
                 CGSize size = [MyServer getImageRightSize:weiboContentImageButton.imageView.image.size];

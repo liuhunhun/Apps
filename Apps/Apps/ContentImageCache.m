@@ -28,11 +28,4 @@
     return imageCache.contentImageData ? (UIImage*)[NSKeyedUnarchiver unarchiveObjectWithData:imageCache.contentImageData] : nil;
 }
 
-+ (void)clearCache {
-    NSArray *contentImageArray = [ContentImageCache allObjects];
-    for (ContentImageCache *contentImageCache in contentImageArray) {
-        [contentImageCache deleteObject];
-    }
-}
-
 @end

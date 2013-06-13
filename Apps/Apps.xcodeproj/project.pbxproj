@@ -24,7 +24,7 @@
 		C3026C5817324538003BC189 /* EGOImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C5317324538003BC189 /* EGOImageView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		C3026C5C173245C4003BC189 /* MyServer.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C5B173245C4003BC189 /* MyServer.m */; };
 		C3026C621732461F003BC189 /* ContentImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C5F1732461F003BC189 /* ContentImageCache.m */; };
-		C3026C631732461F003BC189 /* WeiboCache.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C611732461F003BC189 /* WeiboCache.m */; };
+		C3026C631732461F003BC189 /* SinaWeiboCache.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C611732461F003BC189 /* SinaWeiboCache.m */; };
 		C3026C6617324728003BC189 /* ImagePreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C6517324728003BC189 /* ImagePreviewController.m */; };
 		C3026C6A1732491E003BC189 /* WeiboInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C3026C681732491E003BC189 /* WeiboInputViewController.m */; };
 		C3026C6B1732491E003BC189 /* WeiboInputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C3026C691732491E003BC189 /* WeiboInputViewController.xib */; };
@@ -217,6 +217,13 @@
 		C3F45A65172D2F84001F40FF /* row_partline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C3F45A63172D2F84001F40FF /* row_partline@2x.png */; };
 		C3F45A68172D316C001F40FF /* root_section_bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C3F45A66172D316C001F40FF /* root_section_bg.jpg */; };
 		C3F45A69172D316C001F40FF /* root_section_bg@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C3F45A67172D316C001F40FF /* root_section_bg@2x.jpg */; };
+		C5A652AC1761CF88005C270F /* BWStatusBarOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = C5A652A51761CF88005C270F /* BWStatusBarOverlay.m */; };
+		C5A652AD1761CF88005C270F /* status-bar-pattern-black.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C5A652A61761CF88005C270F /* status-bar-pattern-black.jpg */; };
+		C5A652AE1761CF89005C270F /* status-bar-pattern-black@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C5A652A71761CF88005C270F /* status-bar-pattern-black@2x.jpg */; };
+		C5A652AF1761CF89005C270F /* status-bar-pattern-default.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C5A652A81761CF88005C270F /* status-bar-pattern-default.jpg */; };
+		C5A652B01761CF89005C270F /* status-bar-pattern-default@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C5A652A91761CF88005C270F /* status-bar-pattern-default@2x.jpg */; };
+		C5A652B11761CF89005C270F /* status-bar-progress.png in Resources */ = {isa = PBXBuildFile; fileRef = C5A652AA1761CF88005C270F /* status-bar-progress.png */; };
+		C5A652B21761CF89005C270F /* status-bar-progress@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5A652AB1761CF88005C270F /* status-bar-progress@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -259,8 +266,8 @@
 		C3026C5B173245C4003BC189 /* MyServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyServer.m; sourceTree = "<group>"; };
 		C3026C5E1732461F003BC189 /* ContentImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentImageCache.h; sourceTree = "<group>"; };
 		C3026C5F1732461F003BC189 /* ContentImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentImageCache.m; sourceTree = "<group>"; };
-		C3026C601732461F003BC189 /* WeiboCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboCache.h; sourceTree = "<group>"; };
-		C3026C611732461F003BC189 /* WeiboCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboCache.m; sourceTree = "<group>"; };
+		C3026C601732461F003BC189 /* SinaWeiboCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SinaWeiboCache.h; sourceTree = "<group>"; };
+		C3026C611732461F003BC189 /* SinaWeiboCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SinaWeiboCache.m; sourceTree = "<group>"; };
 		C3026C6417324728003BC189 /* ImagePreviewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePreviewController.h; sourceTree = "<group>"; };
 		C3026C6517324728003BC189 /* ImagePreviewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePreviewController.m; sourceTree = "<group>"; };
 		C3026C671732491E003BC189 /* WeiboInputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboInputViewController.h; sourceTree = "<group>"; };
@@ -529,6 +536,14 @@
 		C3F45A63172D2F84001F40FF /* row_partline@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "row_partline@2x.png"; path = "Resources/row_partline@2x.png"; sourceTree = "<group>"; };
 		C3F45A66172D316C001F40FF /* root_section_bg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = root_section_bg.jpg; path = Resources/root_section_bg.jpg; sourceTree = "<group>"; };
 		C3F45A67172D316C001F40FF /* root_section_bg@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "root_section_bg@2x.jpg"; path = "Resources/root_section_bg@2x.jpg"; sourceTree = "<group>"; };
+		C5A652A41761CF88005C270F /* BWStatusBarOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWStatusBarOverlay.h; sourceTree = "<group>"; };
+		C5A652A51761CF88005C270F /* BWStatusBarOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWStatusBarOverlay.m; sourceTree = "<group>"; };
+		C5A652A61761CF88005C270F /* status-bar-pattern-black.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "status-bar-pattern-black.jpg"; sourceTree = "<group>"; };
+		C5A652A71761CF88005C270F /* status-bar-pattern-black@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "status-bar-pattern-black@2x.jpg"; sourceTree = "<group>"; };
+		C5A652A81761CF88005C270F /* status-bar-pattern-default.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "status-bar-pattern-default.jpg"; sourceTree = "<group>"; };
+		C5A652A91761CF88005C270F /* status-bar-pattern-default@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "status-bar-pattern-default@2x.jpg"; sourceTree = "<group>"; };
+		C5A652AA1761CF88005C270F /* status-bar-progress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "status-bar-progress.png"; sourceTree = "<group>"; };
+		C5A652AB1761CF88005C270F /* status-bar-progress@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "status-bar-progress@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -651,8 +666,8 @@
 			children = (
 				C3026C5E1732461F003BC189 /* ContentImageCache.h */,
 				C3026C5F1732461F003BC189 /* ContentImageCache.m */,
-				C3026C601732461F003BC189 /* WeiboCache.h */,
-				C3026C611732461F003BC189 /* WeiboCache.m */,
+				C3026C601732461F003BC189 /* SinaWeiboCache.h */,
+				C3026C611732461F003BC189 /* SinaWeiboCache.m */,
 				C3304DD817336D18006EC8D6 /* GodCacheObject.h */,
 				C3304DD917336D18006EC8D6 /* GodCacheObject.m */,
 			);
@@ -1185,6 +1200,7 @@
 		C3F45A59172D2676001F40FF /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C5A652A31761CF77005C270F /* BWStatusBarOverlay */,
 				C35BA3F2174B467800D167BD /* TweetLabel */,
 				C3026C491732451C003BC189 /* EGO */,
 				C3026C3317323D30003BC189 /* Views */,
@@ -1200,6 +1216,21 @@
 				C3F45A5C172D27D2001F40FF /* RootCell.m */,
 			);
 			name = Cells;
+			sourceTree = "<group>";
+		};
+		C5A652A31761CF77005C270F /* BWStatusBarOverlay */ = {
+			isa = PBXGroup;
+			children = (
+				C5A652A41761CF88005C270F /* BWStatusBarOverlay.h */,
+				C5A652A51761CF88005C270F /* BWStatusBarOverlay.m */,
+				C5A652A61761CF88005C270F /* status-bar-pattern-black.jpg */,
+				C5A652A71761CF88005C270F /* status-bar-pattern-black@2x.jpg */,
+				C5A652A81761CF88005C270F /* status-bar-pattern-default.jpg */,
+				C5A652A91761CF88005C270F /* status-bar-pattern-default@2x.jpg */,
+				C5A652AA1761CF88005C270F /* status-bar-progress.png */,
+				C5A652AB1761CF88005C270F /* status-bar-progress@2x.png */,
+			);
+			name = BWStatusBarOverlay;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1383,6 +1414,12 @@
 				C3EBDA1717605F5400F09B9A /* has_collection_btn@2x.png in Resources */,
 				C3EBDA1817605F5400F09B9A /* retweet_btn.png in Resources */,
 				C3EBDA1917605F5400F09B9A /* retweet_btn@2x.png in Resources */,
+				C5A652AD1761CF88005C270F /* status-bar-pattern-black.jpg in Resources */,
+				C5A652AE1761CF89005C270F /* status-bar-pattern-black@2x.jpg in Resources */,
+				C5A652AF1761CF89005C270F /* status-bar-pattern-default.jpg in Resources */,
+				C5A652B01761CF89005C270F /* status-bar-pattern-default@2x.jpg in Resources */,
+				C5A652B11761CF89005C270F /* status-bar-progress.png in Resources */,
+				C5A652B21761CF89005C270F /* status-bar-progress@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1455,7 +1492,7 @@
 				C3026C5817324538003BC189 /* EGOImageView.m in Sources */,
 				C3026C5C173245C4003BC189 /* MyServer.m in Sources */,
 				C3026C621732461F003BC189 /* ContentImageCache.m in Sources */,
-				C3026C631732461F003BC189 /* WeiboCache.m in Sources */,
+				C3026C631732461F003BC189 /* SinaWeiboCache.m in Sources */,
 				C3026C6617324728003BC189 /* ImagePreviewController.m in Sources */,
 				C3026C6A1732491E003BC189 /* WeiboInputViewController.m in Sources */,
 				C3304DDA17336D18006EC8D6 /* GodCacheObject.m in Sources */,
@@ -1497,6 +1534,7 @@
 				C35BE20B1753405900677244 /* MenuView.m in Sources */,
 				C3C2D96817545E2D00257C0A /* ToolBarView.m in Sources */,
 				C33B8139175B928700DD5905 /* SinaWeiboContentView.m in Sources */,
+				C5A652AC1761CF88005C270F /* BWStatusBarOverlay.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

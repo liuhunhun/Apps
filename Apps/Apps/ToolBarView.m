@@ -51,4 +51,15 @@
     }
 }
 
+- (void)changeButtonImageWithTag:(NSInteger)buttonTag image:(UIImage*)image {
+    NSArray *viewsArray = [self subviews];
+    for (UIView *view in viewsArray) {
+        if (buttonTag == view.tag) {
+            UIButton *button  = (UIButton*)view;
+            [button setImage:image forState:UIControlStateNormal];
+            break;
+        }
+    }
+}
+
 @end

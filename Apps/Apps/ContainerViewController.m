@@ -20,6 +20,8 @@
 #import "WeiBoCell.h"
 #import "ContentImageCache.h"
 #import "STTweetLabel.h"
+#import "BWStatusBarOverlay.h"
+#import "SinaWeiboCache.h"
 
 @interface ContainerViewController () <SinaWeiboRequestDelegate, WeiboInputViewDelegate, EGOImageButtonDelegate> {
     SinaWeiBoDataSource *sinaWeiboDataSource;
@@ -65,16 +67,14 @@
     
     sinaWeiboDataSource = [[SinaWeiBoDataSource alloc] init];
     _tableView.dataSource = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+        
     if ([self sinaWeiboAuthValid]) {
         clientStatus = AppsClientIsSinaWeibo;
-        if ([sinaWeiboDataSource dataSourceIsEmpty]) {
+        if ([SinaWeiboCache cacheIsEmpty]) {
             [self requestSinaWeibo];
         }
         else {
+            [sinaWeiboDataSource fillDataSources:[SinaWeiboCache allData]];
             _tableView.dataSource = sinaWeiboDataSource;
             [_tableView reloadData];
         }
@@ -91,16 +91,15 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-//- (void)requestMoreWeibo {
-//    SinaWeibo *sinaWeibo = [self sinaWeibo];
-//    [sinaWeibo requestWithURL:@"statuses/friends_timeline.json" params:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:<#(id), ...#>, nil] forKeys:<#(NSArray *)#>] httpMethod:@"GET" delegate:self];
-//}
 
 #pragma mark - Private Method
 
@@ -171,28 +170,15 @@
     }
 }
 
-- (void)requestMoreData {
-    if (!isAskForMore) {
-        
-        [_activityIndicator addBounceAnimation];
-        
-        isAskForMore = YES;
-        
-        SinaWeibo *sinaWeibo = [self sinaWeibo];
-        NSMutableDictionary *params = [NSMutableDictionary dictionary];
-        [params setObject:[sinaWeiboDataSource lastWeiboID] forKey:@"max_id"];
-        [sinaWeibo requestWithURL:@"statuses/friends_timeline.json" params:params httpMethod:@"GET" delegate:self];
-    }
-}
-
 #pragma mark -
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [_activityIndicator addDismissAnimation];
     if (clientStatus == AppsClientIsSinaWeibo) {
-        WeiBoCell *cell = (WeiBoCell*)[tableView cellForRowAtIndexPath:indexPath];
-        [[self sinaWeibo] requestWithURL:@"statuses/show.json" params:[NSMutableDictionary dictionaryWithObject:[cell.weiboID stringValue] forKey:@"id"] httpMethod:@"GET" delegate:self];
+        SinaWeiboDetailController *sinaWeiboDetailController = [[SinaWeiboDetailController alloc] init];
+        [self.navigationController pushViewController:sinaWeiboDetailController animated:YES];
+        [sinaWeiboDetailController createByWeiboInfo:[sinaWeiboDataSource dataSourceAtIndex:indexPath.row]];
     }
     else if (clientStatus == AppsClientIsTencentWeibo) {
         
@@ -220,6 +206,7 @@
 - (void)sendNewWeibo:(NSString *)weiboContent {
     SinaWeibo *sinaWeibo = [self sinaWeibo];
     [sinaWeibo requestWithURL:@"statuses/update.json" params:[NSMutableDictionary dictionaryWithObject:[weiboContent stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] forKey:@"status"] httpMethod:@"POST" delegate:self];
+    [BWStatusBarOverlay showWithMessage:@"微博发送中..." loading:YES animated:YES];
 }
 
 #pragma mark - EGOImageButton Delegate
@@ -242,39 +229,58 @@
     [sinaWeibo requestWithURL:@"statuses/friends_timeline.json" params:nil httpMethod:@"GET" delegate:self];
 }
 
+- (void)requestMoreData {
+    if (!isAskForMore) {
+        
+        [_activityIndicator addBounceAnimation];
+        
+        isAskForMore = YES;
+        
+        SinaWeibo *sinaWeibo = [self sinaWeibo];
+        NSMutableDictionary *params = [NSMutableDictionary dictionary];
+        [params setObject:[sinaWeiboDataSource lastWeiboID] forKey:@"max_id"];
+        [sinaWeibo requestWithURL:@"statuses/friends_timeline.json" params:params httpMethod:@"GET" delegate:self];
+    }
+}
+
 - (void)request:(SinaWeiboRequest *)request didFailWithError:(NSError *)error
 {
     [_activityIndicator addDismissAnimation];
+    if ([request.url hasSuffix:@"statuses/friends_timeline.json"]) {
+        [BWStatusBarOverlay showErrorWithMessage:@"请求失败" duration:2 animated:YES];
+    }
+    else if([request.url hasSuffix:@"statuses/update.json"]) {
+       [BWStatusBarOverlay showErrorWithMessage:@"发送失败" duration:2 animated:YES];
+    }
 }
 
 - (void)request:(SinaWeiboRequest *)request didFinishLoadingWithResult:(id)result
 {
-    [_activityIndicator addDismissAnimation];
     if ([request.url hasSuffix:@"statuses/friends_timeline.json"]) {
         if ([[result objectForKey:@"statuses"] count]) {
+            NSMutableArray *weiboArray = [NSMutableArray arrayWithArray:[result objectForKey:@"statuses"]];
             if (!isAskForMore) {
                 [sinaWeiboDataSource cleanDataSource];
+                [SinaWeiboCache clearCache];
             }
             else {
-                [sinaWeiboDataSource removeLastObject];
+                [weiboArray removeLastObject];
             }
-            [sinaWeiboDataSource fillDataSources:[result objectForKey:@"statuses"]];
+            [sinaWeiboDataSource fillDataSources:weiboArray];
+            [SinaWeiboCache saveWeiboWithInfo:weiboArray];
+            _tableView.dataSource = sinaWeiboDataSource;
+            [_tableView reloadData];
         }
-        _tableView.dataSource = sinaWeiboDataSource;
-        [_tableView reloadData];
-    }
-    else if([request.url hasSuffix:@"statuses/show.json"]) {
-        SinaWeiboDetailController *sinaWeiboDetailController = [[SinaWeiboDetailController alloc] init];
-        [self.navigationController pushViewController:sinaWeiboDetailController animated:YES];
-        [sinaWeiboDetailController createByWeiboInfo:(NSDictionary*)result];
     }
     else if([request.url hasSuffix:@"statuses/update.json"]) {
         if ([result objectForKey:@"id"]) {
+            [BWStatusBarOverlay showSuccessWithMessage:@"微博发送成功" duration:2 animated:YES];
             [self requestSinaWeibo];
         }
     }
     isAskForMore = NO;
     [self revertTableView];
+    [_activityIndicator addDismissAnimation];
 }
 
 @end
