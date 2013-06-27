@@ -11,6 +11,8 @@
 @interface WeiboInputViewController () <UITextViewDelegate> {
     UITextView *inputTextView;
     UILabel *wordNumberLabel;
+    
+    InputType inputType;
 }
 
 - (IBAction)cancelButtonClicked:(id)sender;
@@ -20,6 +22,7 @@
 @implementation WeiboInputViewController
 
 @synthesize delegate;
+@synthesize titleLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -61,17 +64,24 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)inputType:(InputType)type title:(NSString*)title {
+    inputType = type;
+    self.titleLabel.text = title;
+}
+
 - (IBAction)cancelButtonClicked:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)rightButtonClicked:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
-    if ([delegate respondsToSelector:@selector(sendNewWeibo:)] && [inputTextView.text length]) {
+    if ([delegate respondsToSelector:@selector(sendButtonClicked:type:)] && [inputTextView.text length]) {
         NSString *content = [inputTextView.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        [delegate sendNewWeibo:content];
+        [delegate sendButtonClicked:content type:inputType];
     }
 }
+
+
 
 - (void)textViewDidChange:(UITextView *)textView {
     wordNumberLabel.text = [NSString stringWithFormat:@"%d", 140 - textView.text.length];

@@ -10,11 +10,4 @@
 
 @implementation GodCacheObject
 
-+ (void)clearCache {
-    NSArray *cacheArray = [GodCacheObject allObjects];
-    for (GodCacheObject *cache in cacheArray) {
-        [cache deleteObject];
-    }
-}
-
 @end

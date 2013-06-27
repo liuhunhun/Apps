@@ -13,6 +13,13 @@
 @synthesize weiboid;
 @synthesize weiboinfo;
 
++ (void)clearCache {
+    NSArray *cacheArray = [SinaWeiboCache allObjects];
+    for (SinaWeiboCache *cache in cacheArray) {
+        [cache deleteObject];
+    }
+}
+
 + (BOOL)cacheIsEmpty {
     return [[SinaWeiboCache allObjects] count] ? NO : YES;
 }

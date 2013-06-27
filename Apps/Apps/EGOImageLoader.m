@@ -128,7 +128,7 @@ inline static NSString* keyForURL(NSURL* url, NSString* style) {
 		return connection;
 	} else {
 		connection = [[EGOImageLoadConnection alloc] initWithImageURL:aURL delegate:self];
-	
+
 		[connectionsLock lock];
 		[currentConnections setObject:connection forKey:aURL];
 		self.currentConnections = [[currentConnections copy] autorelease];

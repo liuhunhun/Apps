@@ -439,7 +439,7 @@ static BOOL G_LOGOUT = NO;
     for (NSString *keyItem in arrReservedKeys) {
         [dic setObject:[parReserved objectForKey:keyItem] forKey:keyItem];
     }
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     [self initRequestWithMethodName:@"t/add_pic"
                          httpMethod:@"POST" 
                              params:dic
@@ -448,7 +448,7 @@ static BOOL G_LOGOUT = NO;
                            delegate:requestDelegate
                           onSuccess:successCallback
                           onFailure:failuerCallback];
-//    });
+    });
     [dic release];
     
 }

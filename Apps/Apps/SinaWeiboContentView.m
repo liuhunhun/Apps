@@ -40,11 +40,11 @@
         UIImage *image = [UIImage imageNamed:@"retweet_bg.png"];
         image = [image stretchableImageWithLeftCapWidth:25 topCapHeight:10];
         retweetBgImageView = [[UIImageView alloc] initWithImage:image];
-        retweetBgImageView.frame = CGRectMake(20, 0, 240, 0);
+        retweetBgImageView.frame = CGRectMake(20, 0, 280, 0);
         [self addSubview:retweetBgImageView];
         retweetBgImageView.userInteractionEnabled = YES;
         
-        retweetContentLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, 220, 0)];
+        retweetContentLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, 260, 0)];
         retweetContentLabel.numberOfLines = 0;
         retweetContentLabel.backgroundColor = [UIColor clearColor];
         retweetContentLabel.textAlignment = UILineBreakModeWordWrap;
@@ -95,7 +95,7 @@
         rect = weiboContentImageButton.frame;
         if ([[[info objectForKey:@"retweeted_status"] objectForKey:@"text"] length]) {
             [retweetContentLabel setText:[[info objectForKey:@"retweeted_status"] objectForKey:@"text"]];
-            size = [retweetContentLabel.text sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(220, 10000) lineBreakMode:UILineBreakModeWordWrap];
+            size = [retweetContentLabel.text sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(260, 10000) lineBreakMode:UILineBreakModeWordWrap];
             retweetContentLabel.frame = CGRectMake(retweetContentLabel.frame.origin.x, retweetContentLabel.frame.origin.y, size.width, size.height);
             
             [retweetContentImageButton setImageURL:[NSURL URLWithString:[[info objectForKey:@"retweeted_status"] objectForKey:@"thumbnail_pic"]]];

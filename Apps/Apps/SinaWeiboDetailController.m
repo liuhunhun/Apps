@@ -7,20 +7,27 @@
 //
 
 #import "SinaWeiboDetailController.h"
+
 #import "STTweetLabel.h"
 #import "EGOImageView.h"
 #import "EGOImageButton.h"
-#import "SinaWeiboContentView.h"
-#import "ImagePreviewController.h"
-#import "SinaWeibo.h"
 #import "MyActivityIndicator.h"
 #import "BWStatusBarOverlay.h"
 #import "ToolBarView.h"
+#import "WeiboCommentCell.h"
 
-@interface SinaWeiboDetailController () <SinaWeiboRequestDelegate> {
-    NSDictionary *weiboDic;
-    NSArray *commentArray;
-    
+#import "SinaWeiboContentView.h"
+#import "ImagePreviewController.h"
+#import "WeiboInputViewController.h"
+
+#import "SinaWeiboCommentDataSource.h"
+
+#import "SinaWeibo.h"
+
+
+@interface SinaWeiboDetailController () <SinaWeiboRequestDelegate, WeiboInputViewDelegate> {
+    NSMutableDictionary *weiboDic;
+
     EGOImageView *coverImageView;
     EGOImageButton *avatarButton;
     UILabel *nameLabel;
@@ -29,6 +36,9 @@
     
     SinaWeiboContentView *sinaWeiboContentView;
     ImagePreviewController *imagePreviewController;
+    WeiboInputViewController *inputController;
+    
+    SinaWeiboCommentDataSource *commentDataSource;
 }
 
 @end
@@ -74,6 +84,8 @@
     
     _tableView.frame = CGRectMake(self.view.bounds.origin.x, self.view.bounds.origin.y + coverImageView.frame.size.height, self.view.bounds.size.width
                                   , self.view.bounds.size.height - coverImageView.frame.size.height);
+    
+    commentDataSource = [[SinaWeiboCommentDataSource alloc] init];
 }
 
 - (void)didReceiveMemoryWarning
@@ -91,22 +103,50 @@
 - (void)toolBarItemClicked:(NSInteger)tag {
     switch (tag) {
         case 1:
-            [[self sinaWeibo] requestWithURL:@"favorites/create.json" params:[NSMutableDictionary dictionaryWithObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"] httpMethod:@"POST" delegate:self];
+            if ([[weiboDic valueForKey:@"favorited"] boolValue]) {
+                [requestsArray addObject:[[self sinaWeibo] requestWithURL:@"favorites/destroy.json" params:[NSMutableDictionary dictionaryWithObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"] httpMethod:@"POST" delegate:self]];
+            }
+            else {
+                [requestsArray addObject:[[self sinaWeibo] requestWithURL:@"favorites/create.json" params:[NSMutableDictionary dictionaryWithObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"] httpMethod:@"POST" delegate:self]];
+            }
             break;
         case 2:
+            if (!inputController) {
+                inputController = [[WeiboInputViewController alloc] init];
+                inputController.delegate = self;
+            }
+            [self presentModalViewController:inputController animated:YES];
+            [inputController inputType:IsComment title:@"评论"];
             break;
         case 3:
-            [[self sinaWeibo] requestWithURL:@"comments/create.json" params:nil httpMethod:@"GET" delegate:self];
+            [requestsArray addObject:[[self sinaWeibo] requestWithURL:@"comments/create.json" params:nil httpMethod:@"GET" delegate:self]];
             break;
         default:
             break;
     }
 }
 
+- (void)requestMoreData {
+    if (!isAskForMore) {
+        
+        [_activityIndicator addBounceAnimation];
+        
+        isAskForMore = YES;
+        
+        SinaWeibo *sinaWeibo = [self sinaWeibo];
+        NSMutableDictionary *params = [NSMutableDictionary dictionary];
+        [params setObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"];
+        if ([[commentDataSource lastCommentID] length]) {
+            [params setObject:[commentDataSource lastCommentID] forKey:@"max_id"];
+        }
+        [sinaWeibo requestWithURL:@"comments/show.json" params:params httpMethod:@"GET" delegate:self];
+    }
+}
+
 #pragma mark - Private Method
 
 - (void)createByWeiboInfo:(NSDictionary*)info {
-    weiboDic = [NSDictionary dictionaryWithDictionary:info];
+    weiboDic = [NSMutableDictionary dictionaryWithDictionary:info];
 
     [avatarButton setImageURL:[NSURL URLWithString:[[info objectForKey:@"user"] objectForKey:@"avatar_large"]]];
     
@@ -128,13 +168,10 @@
     [sinaWeiboContentView.retweetContentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     _tableView.tableHeaderView = sinaWeiboContentView;
         
-    if ([[info valueForKey:@"favorited"] boolValue]) {
-        [toolBarView changeButtonImageWithTag:1 image:[UIImage imageNamed:@"has_collection_btn.png"]];
-    }
+    [requestsArray addObject:[[self sinaWeibo] requestWithURL:@"favorites/show.json" params:[NSMutableDictionary dictionaryWithObject:[[info objectForKey:@"id"] stringValue] forKey:@"id"] httpMethod:@"GET" delegate:self]];
+    
+    [self requestComments];
 }
-
-#pragma -
-#pragma mark Private Method
 
 - (void)imageButtonClicked:(id)sender {
     EGOImageButton *button = (EGOImageButton*)sender;
@@ -149,21 +186,32 @@
 }
 
 #pragma -
+#pragma mark WeiboInputView Delegate
+
+- (void)sendButtonClicked:(NSString *)content type:(InputType)type {
+    NSMutableDictionary *params;
+    switch (type) {
+        case IsNewWeibo:
+            break;
+        case IsComment:
+            params = [[NSMutableDictionary alloc] init];
+            [params setObject:[content stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] forKey:@"comment"];
+            [params setObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"];
+            [[self sinaWeibo] requestWithURL:@"comments/create.json" params:params httpMethod:@"POST" delegate:self];
+            [BWStatusBarOverlay showWithMessage:@"评论发送中..." loading:YES animated:YES];
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma -
 #pragma mark UITableViewDelegate
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
-}
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
-    label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont boldSystemFontOfSize:15];
-    label.text = [NSString stringWithFormat:@"     评 论 ( %d )", [commentArray count]];
+    label.font = [UIFont boldSystemFontOfSize:18];
+    label.text = [NSString stringWithFormat:@" 评 论 ( %d )", [commentDataSource dataSourceTotalNumber]];
     return label;
 }
 
@@ -171,41 +219,33 @@
     return 30;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-//    static NSString *CellIdentifier = @"WeiBoCell";
-//    WeiBoCell *cell = (WeiBoCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-//    if (nil == cell) {
-//        cell = [[WeiBoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-//        cell.selectionStyle = UITableViewCellSelectionStyleGray;
-//    }
-//    [self configureCell:cell atIndexPath:indexPath];
-    return nil;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat cellHeight = [WeiboCommentCell cellHeight:[commentDataSource dataSourceAtIndex:indexPath.row]];
+    return cellHeight > 50 ? cellHeight : 50;
 }
 
-//- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-//    WeiBoCell *wbCell = (WeiBoCell*)cell;
-//    NSDictionary *dic = [weiboArray objectAtIndex:indexPath.row];
-//    [wbCell.avatarButton setImageURL:[NSURL URLWithString:[[dic objectForKey:@"user"] objectForKey:@"profile_image_url"]]];` 
-//    [wbCell.nam12eLabel setText:[[dic objectForKey:@"user"] objectForKey:@"name"]];//    [wbCell.contentLabel setText:[dic objectForKey:@"text"]];
-//    [wbCell.timeLabel setText:[MyServer intervalSinceNow:[dic objectForKey:@"created_at"]]];
-//    [wbCell.contentImageButton setImageURL:[NSURL URLWithString:[dic objectForKey:@"thumbnail_pic"]]];
-//    [wbCell.contentImageButton setTitle:[dic objectForKey:@"original_pic"] forState:UIControlStateNormal];
-//    
-//    [wbCell.retweetContentLabel setText:[[dic objectForKey:@"retweeted_status"] objectForKey:@"text"]];
-//    [wbCell.retweetContentImageButton setImageURL:[NSURL URLWithString:[[dic objectForKey:@"retweeted_status"] objectForKey:@"thumbnail_pic"]]];
-//    [wbCell.retweetContentImageButton setTitle:[[dic objectForKey:@"retweeted_status"] objectForKey:@"original_pic"] forState:UIControlStateNormal];
-//    
-//    wbCell.weiboID = [dic objectForKey:@"id"];
-//}
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+}
 
 #pragma mark - SinaWeiboRequest Delegate
+
+- (void)requestComments {
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    [params setObject:[[weiboDic objectForKey:@"id"] stringValue] forKey:@"id"];
+    [[self sinaWeibo] requestWithURL:@"comments/show.json" params:params httpMethod:@"GET" delegate:self];
+}
 
 - (void)request:(SinaWeiboRequest *)request didFailWithError:(NSError *)error
 {
     if ([request.url hasSuffix:@"favorites/create.json"]) {
         [BWStatusBarOverlay showErrorWithMessage:@"收藏失败" duration:2 animated:YES];
     }
+    else if ([request.url hasSuffix:@"comments/create.json"]) {
+        [BWStatusBarOverlay showSuccessWithMessage:@"评论失败" duration:2 animated:YES];
+    }
     [_activityIndicator addDismissAnimation];
+    [requestsArray removeObject:request];
 }
 
 - (void)request:(SinaWeiboRequest *)request didFinishLoadingWithResult:(id)result
@@ -213,8 +253,35 @@
     if ([request.url hasSuffix:@"favorites/create.json"]) {
         [BWStatusBarOverlay showSuccessWithMessage:@"收藏成功" duration:2 animated:YES];
         [toolBarView changeButtonImageWithTag:1 image:[UIImage imageNamed:@"has_collection_btn.png"]];
-    }    [self revertTableView];
+        [weiboDic setValue:@"1" forKey:@"favorited"];
+    }
+    else if ([request.url hasSuffix:@"favorites/show.json"]) {
+        if (![[result objectForKey:@"error"] length]) {
+            [toolBarView changeButtonImageWithTag:1 image:[UIImage imageNamed:@"has_collection_btn.png"]];
+            [weiboDic setValue:@"1" forKey:@"favorited"];
+        }
+    }
+    else if ([request.url hasSuffix:@"favorites/destroy.json"]) {
+        [BWStatusBarOverlay showSuccessWithMessage:@"取消收藏成功" duration:2 animated:YES];
+        [toolBarView changeButtonImageWithTag:1 image:[UIImage imageNamed:@"collection_btn.png"]];
+        [weiboDic setValue:@"0" forKey:@"favorited"];
+    }
+    else if ([request.url hasSuffix:@"comments/create.json"]) {
+        [BWStatusBarOverlay showSuccessWithMessage:@"评论成功" duration:2 animated:YES];
+    }
+    else if ([request.url hasSuffix:@"comments/show.json"]) {
+        NSMutableArray *weiboArray = [NSMutableArray arrayWithArray:[result objectForKey:@"comments"]];
+        if (!isAskForMore) {
+            [commentDataSource cleanDataSource];
+        }
+        [commentDataSource fillDataSources:weiboArray];
+        _tableView.dataSource = commentDataSource;
+        [_tableView reloadData];
+        isAskForMore = NO;
+    }
+    [self revertTableView];
     [_activityIndicator addDismissAnimation];
+    [requestsArray removeObject:request];
 }
 
 @end

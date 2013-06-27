@@ -10,15 +10,20 @@
 
 @implementation GodDataSource
 
-- (void)fillDataSources:(NSArray*)array {
+- (NSInteger)dataSourceTotalNumber {
+    return [weiboArray count];
+}
+
+- (NSMutableArray*)fillDataSources:(NSMutableArray*)array {
     if (!weiboArray) {
         weiboArray = [[NSMutableArray alloc] init];
     }
+    else if ([array count]) {
+        [array removeObjectAtIndex:0];
+    }
     [weiboArray addObjectsFromArray:array];
-}
 
-- (void)addDataSources:(NSArray*)array {
-    [weiboArray addObjectsFromArray:array];
+    return array;
 }
 
 - (void)cleanDataSource {

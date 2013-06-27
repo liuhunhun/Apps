@@ -32,6 +32,8 @@
 @property (nonatomic, readwrite, copy) NSString *weiboid;
 @property (nonatomic, readwrite, retain) NSData *weiboinfo;
 
++ (void)clearCache;
+
 + (BOOL)cacheIsEmpty;
 
 + (BOOL)saveWeiboWithInfo:(NSArray*)weiboArray;

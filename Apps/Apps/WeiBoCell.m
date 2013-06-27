@@ -77,6 +77,7 @@
         contentImageButton = [[EGOImageButton alloc] initWithPlaceholderImage:[UIImage imageNamed:@"default_image.png"]];
         contentImageButton.frame = CGRectMake(10, 10, 0, 0);
         [self addSubview:contentImageButton];
+        contentImageButton.delegate = self;
         
         contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 35, 250, 10000)];
         contentLabel.numberOfLines = 0;
@@ -108,6 +109,7 @@
         retweetContentImageButton = [[EGOImageButton alloc] initWithPlaceholderImage:[UIImage imageNamed:@"default_image.png"]];
         retweetContentImageButton.frame = CGRectMake(10, 10, 0, 0);
         [retweetBgImageView addSubview:retweetContentImageButton];
+        retweetContentImageButton.delegate = self;
         
         timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 0, 250, 20)];
         timeLabel.backgroundColor = [UIColor clearColor];
@@ -187,6 +189,17 @@
     }
     
     timeLabel.frame = CGRectMake(60, retweetBgImageView.frame.origin.y + retweetBgImageView.frame.size.height + 6, timeLabel.frame.size.width, timeLabel.frame.size.height);
+}
+
+#pragma mark - EGOImageButton Delegate
+
+- (void)imageButtonLoadedImage:(EGOImageButton*)imageButton {
+    [ContentImageCache saveContentImage:imageButton.imageView.image forKey:[imageButton.imageURL absoluteString]];
+    [self layoutSubviews];
+}
+
+- (void)imageButtonFailedToLoadImage:(EGOImageButton*)imageButton error:(NSError*)error {
+    
 }
 
 @end

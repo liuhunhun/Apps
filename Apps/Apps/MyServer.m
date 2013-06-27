@@ -9,6 +9,7 @@
 #import "MyServer.h"
 
 #define MAXWIDTH 90
+#define MAXHEIGHT 68
 
 @implementation MyServer
 
@@ -52,7 +53,7 @@
     NSRange range = [timeStr rangeOfString:[NSString stringWithFormat:@":%@",ampm]];
     location = range.location;
     NSString *string = [timeStr substringToIndex:location];
-//    timeStr = [NSString stringWithFormat:@"%@ %@",ampm,string];
+    timeStr = [NSString stringWithFormat:@"%@ %@",ampm,string];
     
     NSTimeInterval late=[date timeIntervalSince1970]*1;
     NSDate* dat = [NSDate dateWithTimeIntervalSinceNow:0];
@@ -65,24 +66,33 @@
     if (cha / 86400 < 1) {
         result = [NSString stringWithFormat:@"今天 %@", string];
     }
-    else if (cha/60<3) {
+    else {
         NSString *dateStr = @"";
         NSDateFormatter *Dformatter = [[NSDateFormatter alloc] init];
         [Dformatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
-        [Dformatter setDateFormat:@"yyyy-MM-dd"];
+        [Dformatter setDateFormat:@"MM-dd"];
         dateStr = [Dformatter stringFromDate:date];
-        result = [NSString stringWithFormat:@"%@  %@",dateStr,timeStr];
+        result = [NSString stringWithFormat:@"%@  %@",dateStr,string];
     }
     return result;
 }
 
 + (CGSize)getImageRightSize:(CGSize)srcSize {
     CGSize resultSize = srcSize;
-    if (srcSize.width > MAXWIDTH) {
-        CGFloat multiple = MAXWIDTH / srcSize.width;
-        resultSize.width = srcSize.width * multiple;
-        resultSize.height = srcSize.height * multiple;
+    float temp = 1.0;
+    if (srcSize.width > MAXWIDTH && srcSize.height > MAXHEIGHT) {
+        CGFloat widthTemp = MAXWIDTH / srcSize.width;
+        CGFloat heightTemp = MAXHEIGHT / srcSize.height;
+        temp = widthTemp >= heightTemp ? heightTemp : widthTemp;
     }
+    else if (srcSize.width > MAXWIDTH && srcSize.height <= MAXHEIGHT) {
+        temp = MAXWIDTH / srcSize.width;
+    }
+    else if (srcSize.width <= MAXWIDTH && srcSize.height > MAXHEIGHT) {
+        temp = MAXHEIGHT / srcSize.height;
+    }
+    resultSize.width = srcSize.width * temp;
+    resultSize.height = srcSize.height * temp;
     return resultSize;
 }
 

@@ -22,6 +22,7 @@ typedef enum {
 
 @interface GodViewController : UIViewController {
     BOOL needTableView;
+    BOOL isAskForMore;
     UITableView *_tableView;
 
     BOOL needActivityIndicator;
@@ -33,6 +34,8 @@ typedef enum {
     BOOL needToolBarView;
     NSArray *toolBarItemImages;
     ToolBarView *toolBarView;
+    
+    NSMutableArray *requestsArray;
 }
 
 - (SinaWeibo*)sinaWeibo;
@@ -46,5 +49,7 @@ typedef enum {
 - (void)authorizeSuccessed:(AppLoginStatus)status;
 
 - (void)revertTableView;
+
+- (void)clearRequestsDelegate;
 
 @end

@@ -32,8 +32,6 @@
     ImagePreviewController *imagePreviewController;
     
     AppsClientStatus clientStatus;
-    
-    BOOL isAskForMore;
 }
 
 @end
@@ -66,7 +64,6 @@
     }
     
     sinaWeiboDataSource = [[SinaWeiBoDataSource alloc] init];
-    _tableView.dataSource = nil;
         
     if ([self sinaWeiboAuthValid]) {
         clientStatus = AppsClientIsSinaWeibo;
@@ -160,6 +157,7 @@
                 inputController.delegate = self;
             }
             [self presentModalViewController:inputController animated:YES];
+            [inputController inputType:IsNewWeibo title:@""];
             break;
         case 2:
             [_tableView setContentOffset:CGPointMake(0, 0) animated:YES];
@@ -194,19 +192,27 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     WeiBoCell *wbCell = (WeiBoCell*)cell;
-    wbCell.contentImageButton.delegate = self;
+//    wbCell.contentImageButton.delegate = self;
     [wbCell.contentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    wbCell.retweetContentImageButton.delegate = self;
+//    wbCell.retweetContentImageButton.delegate = self;
     [wbCell.retweetContentImageButton addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark -
 #pragma mark WeiboInputView Delegate
 
-- (void)sendNewWeibo:(NSString *)weiboContent {
+- (void)sendButtonClicked:(NSString *)content type:(InputType)type {
     SinaWeibo *sinaWeibo = [self sinaWeibo];
-    [sinaWeibo requestWithURL:@"statuses/update.json" params:[NSMutableDictionary dictionaryWithObject:[weiboContent stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] forKey:@"status"] httpMethod:@"POST" delegate:self];
-    [BWStatusBarOverlay showWithMessage:@"微博发送中..." loading:YES animated:YES];
+    switch (type) {
+        case IsNewWeibo:
+            [sinaWeibo requestWithURL:@"statuses/update.json" params:[NSMutableDictionary dictionaryWithObject:[content stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] forKey:@"status"] httpMethod:@"POST" delegate:self];
+            [BWStatusBarOverlay showWithMessage:@"微博发送中..." loading:YES animated:YES];
+            break;
+        case IsComment:
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - EGOImageButton Delegate
@@ -214,6 +220,7 @@
 - (void)imageButtonLoadedImage:(EGOImageButton*)imageButton {
     [ContentImageCache saveContentImage:imageButton.imageView.image forKey:[imageButton.imageURL absoluteString]];
     [_tableView reloadData];
+//    NSLog(@"13213123123");
 }
 
 - (void)imageButtonFailedToLoadImage:(EGOImageButton*)imageButton error:(NSError*)error {
@@ -248,6 +255,7 @@
     [_activityIndicator addDismissAnimation];
     if ([request.url hasSuffix:@"statuses/friends_timeline.json"]) {
         [BWStatusBarOverlay showErrorWithMessage:@"请求失败" duration:2 animated:YES];
+        isAskForMore = NO;
     }
     else if([request.url hasSuffix:@"statuses/update.json"]) {
        [BWStatusBarOverlay showErrorWithMessage:@"发送失败" duration:2 animated:YES];
@@ -263,13 +271,11 @@
                 [sinaWeiboDataSource cleanDataSource];
                 [SinaWeiboCache clearCache];
             }
-            else {
-                [weiboArray removeLastObject];
-            }
             [sinaWeiboDataSource fillDataSources:weiboArray];
             [SinaWeiboCache saveWeiboWithInfo:weiboArray];
             _tableView.dataSource = sinaWeiboDataSource;
             [_tableView reloadData];
+            isAskForMore = NO;
         }
     }
     else if([request.url hasSuffix:@"statuses/update.json"]) {
@@ -278,7 +284,6 @@
             [self requestSinaWeibo];
         }
     }
-    isAskForMore = NO;
     [self revertTableView];
     [_activityIndicator addDismissAnimation];
 }

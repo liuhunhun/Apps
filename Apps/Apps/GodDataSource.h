@@ -12,9 +12,9 @@
     NSMutableArray *weiboArray;
 }
 
-- (void)fillDataSources:(NSArray*)array;
+- (NSInteger)dataSourceTotalNumber;
 
-- (void)addDataSources:(NSArray*)array;
+- (NSMutableArray*)fillDataSources:(NSMutableArray*)array;
 
 - (void)cleanDataSource;
 

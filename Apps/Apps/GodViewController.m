@@ -41,62 +41,9 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.navigationBarHidden = YES;
     
-//    if (leftButtonImage || leftButtonImagesArray) {
-//        if (leftButtonImage) {
-//            UIButton *leftButtonItem = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, leftButtonImage.size.width, leftButtonImage.size.height)];
-//            leftButtonItem.showsTouchWhenHighlighted = YES;
-//            [leftButtonItem setBackgroundImage:leftButtonImage forState:UIControlStateNormal];
-//            [leftButtonItem.titleLabel setFont:[UIFont boldSystemFontOfSize:12]];
-//            [leftButtonItem addTarget:self action:@selector(leftButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-//            UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:leftButtonItem];
-//            self.navigationItem.leftBarButtonItem = leftItem;
-//        }
-//        else if(leftButtonImagesArray) {
-//            NSMutableArray *itemArray = [NSMutableArray array];
-//            for (UIImage *image in leftButtonImagesArray) {
-//                UIButton *leftButtonItem = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
-//                leftButtonItem.showsTouchWhenHighlighted = YES;
-//                [leftButtonItem setBackgroundImage:leftButtonImage forState:UIControlStateNormal];
-//                [leftButtonItem.titleLabel setFont:[UIFont boldSystemFontOfSize:12]];
-//                [leftButtonItem addTarget:self action:@selector(leftButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-//                UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:leftButtonItem];
-//                [itemArray addObject:leftItem];
-//            }
-//            self.navigationItem.leftBarButtonItems = itemArray;
-//        }
-//    }
-//    if (rightButtonImage || rightButtonImagesArray) {
-//        if (rightButtonImage) {
-//            UIButton *rightButtonItem = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, rightButtonImage.size.width, rightButtonImage.size.height)];
-//            rightButtonItem.showsTouchWhenHighlighted = YES;
-//            [rightButtonItem setBackgroundImage:rightButtonImage forState:UIControlStateNormal];
-//            [rightButtonItem.titleLabel setFont:[UIFont boldSystemFontOfSize:12]];
-//            [rightButtonItem addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-//            UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightButtonItem];
-//            self.navigationItem.rightBarButtonItem = rightItem;
-//        }
-//        else if(rightButtonImagesArray) {
-//            NSMutableArray *itemArray = [NSMutableArray array];
-//            NSInteger tag = 0;
-//            for (UIImage *image in rightButtonImagesArray) {
-//                UIButton *rightButtonItem = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
-//                rightButtonItem.tag = tag;
-//                rightButtonItem.showsTouchWhenHighlighted = YES;
-//                [rightButtonItem setBackgroundImage:image forState:UIControlStateNormal];
-//                [rightButtonItem.titleLabel setFont:[UIFont boldSystemFontOfSize:12]];
-//                [rightButtonItem addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-//                UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightButtonItem];
-//                [itemArray addObject:rightItem];
-//                tag++;
-//            }
-//            self.navigationItem.rightBarButtonItems = itemArray;
-//        }
-//    }
-    
     if (needTableView) {
         _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
         _tableView.delegate = self;
-        _tableView.dataSource = self;
         [self.view addSubview:_tableView];
     }
     
@@ -117,12 +64,19 @@
         toolBarView.delegate = self;
         [self.view addSubview:toolBarView];
     }
+    
+    requestsArray = [[NSMutableArray alloc] init];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [BWStatusBarOverlay dismissAnimated];
     [_activityIndicator addDismissAnimation];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self clearRequestsDelegate];
 }
 
 - (void)didReceiveMemoryWarning
@@ -176,6 +130,15 @@
 
 - (void)revertTableView {
     [UIView animateWithDuration:0.3 animations:^(void) {_tableView.contentInset = UIEdgeInsetsZero;}];
+}
+
+- (void)clearRequestsDelegate {
+    if ([requestsArray count]) {
+        for (SinaWeiboRequest *request in requestsArray) {
+            request.delegate = nil;
+        }
+    }
+    [requestsArray removeAllObjects];
 }
 
 #pragma mark -  ToolBarView Delegate
